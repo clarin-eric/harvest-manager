@@ -56,6 +56,17 @@
             </snapshots>
         </repository>
     </repositories>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>CLARIN-Snapshot</id>
+            <url>https://nexus.clarin.eu/content/repositories/clarin-snapshot</url>
+        </snapshotRepository>
+        <repository>
+            <id>CLARIN</id>
+            <url>https://nexus.clarin.eu/content/repositories/Clarin</url>
+        </repository>
+    </distributionManagement>
+
 
     <!-- DEPENDENCIES -->
     <dependencies>
@@ -240,19 +251,6 @@
                 </includes>
             </testResource>
         </testResources>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <!-- Disable deployment because has not been configured -->
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
-                    <configuration>
-                        <skip>true</skip>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <plugins>
             <plugin>

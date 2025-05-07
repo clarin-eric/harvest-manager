@@ -17,7 +17,7 @@
 #####################################################################################
 
 #configuration
-APP_NAME="oai-harvest-manager"
+APP_NAME="harvest-manager"
 MAVEN_IMAGE="maven:3.8.6-jdk-11"
 CLEAN_CACHE=${CLEAN_CACHE:-false}
 
@@ -87,6 +87,8 @@ docker_run() {
 		--rm \
 		--name "${BUILD_CONTAINER_NAME}" \
 		-v "${MAVEN_CONFIG_IMAGE}":"${MAVEN_CONFIG_DIR}" \
+#		-v "${HOME}/.m2/settings.xml":"${MAVEN_CONFIG_DIR}/settings.xml" \
+#		-v "${HOME}/.m2/settings-security.xml":"${MAVEN_CONFIG_DIR}/settings-security.xml" \
 		-e MAVEN_CONFIG="${MAVEN_CONFIG_DIR}" \
 		-v "${JAVA_SRC_DIR}":/var/src  \
 		-w /var/src \
