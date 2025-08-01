@@ -18,14 +18,10 @@
 package nl.mpi.oai.harvester.control;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.NodeList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -34,11 +30,8 @@ import java.util.Collection;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * Tests for RegistryReader. (Only parsing of canned responses is tested. No

@@ -130,11 +130,11 @@
             <type>jar</type>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>xalan</groupId>-->
-<!--            <artifactId>xalan</artifactId>-->
-<!--            <version>2.7.2</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>xalan</groupId>-->
+        <!--            <artifactId>xalan</artifactId>-->
+        <!--            <version>2.7.2</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>junit</groupId>
@@ -153,13 +153,13 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.14.0</version>
+            <version>2.18.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.4.6</version>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
   
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.0.1-jre</version>
+            <version>31.1-jre</version>
         </dependency>
     
         <!-- for java 11 -->
@@ -205,7 +205,7 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180725.0427</version>
+            <version>2.4.0-b180830.0359</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
@@ -214,30 +214,34 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-bom</artifactId>
-            <version>4.0.2</version>
+            <artifactId>rdf4j-storage</artifactId>
             <type>pom</type>
-            <scope>import</scope>
         </dependency>
         <!--
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-storage</artifactId>
-            <version>4.0.5</version>
-            <type>pom</type>
-        </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
         </dependency>
         -->
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.rdf4j</groupId>-->
-<!--            <artifactId>rdf4j-repository-sparql</artifactId>-->
-<!--            <version>4.0.2</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.eclipse.rdf4j</groupId>-->
+        <!--            <artifactId>rdf4j-repository-sparql</artifactId>-->
+        <!--            <version>4.0.2</version>-->
+        <!--        </dependency>-->
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-bom</artifactId>
+                <version>4.3.15</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- Build cycle referred plugins -->
     <build>
