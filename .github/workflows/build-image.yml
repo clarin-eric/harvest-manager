@@ -43,5 +43,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # TODO: use this temp dockerfile until saxon utils become available online
-          file: Dockerfile.temp
+          file: Dockerfile
