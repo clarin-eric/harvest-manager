@@ -96,7 +96,7 @@ public class ListSets extends HarvesterVerb {
 	public String getResumptionToken()
 		throws TransformerException, NoSuchFieldException, ParserConfigurationException, SAXException, IOException,
 		XMLStreamException, SaxonApiException {
-		if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
+		if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())||SCHEMA_LOCATION_V2_0_HTTPS.equals(getSchemaLocation())) {
 			return getSingleString("/oai20:OAI-PMH/oai20:ListSets/oai20:resumptionToken");
 		} else if (SCHEMA_LOCATION_V1_1_LIST_SETS.equals(getSchemaLocation())) {
 			return getSingleString("/oai11_ListSets:ListSets/oai11_ListSets:resumptionToken");

@@ -94,7 +94,7 @@ public class ListIdentifiers extends HarvesterVerb {
     public String getResumptionToken()
         throws TransformerException, NoSuchFieldException, ParserConfigurationException, SAXException, IOException,
         XMLStreamException, SaxonApiException {
-        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
+        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())||SCHEMA_LOCATION_V2_0_HTTPS.equals(getSchemaLocation())) {
             return getSingleString("/oai20:OAI-PMH/oai20:ListIdentifiers/oai20:resumptionToken");
         } else if (SCHEMA_LOCATION_V1_1_LIST_IDENTIFIERS.equals(getSchemaLocation())) {
             return getSingleString("/oai11_ListIdentifiers:ListIdentifiers/oai11_ListIdentifiers:resumptionToken");

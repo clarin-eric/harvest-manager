@@ -69,7 +69,7 @@ public class GetRecord extends HarvesterVerb {
     public String getIdentifier()
         throws TransformerException, NoSuchFieldException, ParserConfigurationException, SAXException, IOException,
         XMLStreamException, SaxonApiException {
-        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
+        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation()) || SCHEMA_LOCATION_V2_0_HTTPS.equals(getSchemaLocation())) {
             return getSingleString("/oai20:OAI-PMH/oai20:GetRecord/oai20:record/oai20:header/oai20:identifier");
         } else if (SCHEMA_LOCATION_V1_1_GET_RECORD.equals(getSchemaLocation())) {
             return getSingleString("/oai11_GetRecord:GetRecord/oai11_GetRecord:record/oai11_GetRecord:header/oai11_GetRecord:identifier");

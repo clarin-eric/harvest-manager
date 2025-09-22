@@ -72,6 +72,7 @@ public abstract class HarvesterVerb {
 
     /* Primary OAI namespaces */
     public static final String SCHEMA_LOCATION_V2_0 = "http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
+    public static final String SCHEMA_LOCATION_V2_0_HTTPS = "http://www.openarchives.org/OAI/2.0/ https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
     public static final String SCHEMA_LOCATION_V1_1_GET_RECORD = "http://www.openarchives.org/OAI/1.1/OAI_GetRecord http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd";
     public static final String SCHEMA_LOCATION_V1_1_IDENTIFY = "http://www.openarchives.org/OAI/1.1/OAI_Identify http://www.openarchives.org/OAI/1.1/OAI_Identify.xsd";
     public static final String SCHEMA_LOCATION_V1_1_LIST_IDENTIFIERS = "http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd";
@@ -236,7 +237,7 @@ public abstract class HarvesterVerb {
      * @throws TransformerException
      */
     public List<Node> getErrors() throws TransformerException, ParserConfigurationException, SaxonApiException, SAXException, IOException, XMLStreamException {
-        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
+        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())||SCHEMA_LOCATION_V2_0_HTTPS.equals(getSchemaLocation())) {
             return getNodeList("/oai20:OAI-PMH/oai20:error");
         } else {
             return null;
