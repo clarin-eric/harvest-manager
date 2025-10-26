@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#set -x
+
 #####################################################################################
 # Script for building the OAI harvest manager without depending on a local 
 # Java / Maven environment. Requires docker to be installed and available to the current user!
@@ -87,8 +89,8 @@ docker_run() {
 		--rm \
 		--name "${BUILD_CONTAINER_NAME}" \
 		-v "${MAVEN_CONFIG_IMAGE}":"${MAVEN_CONFIG_DIR}" \
-#		-v "${HOME}/.m2/settings.xml":"${MAVEN_CONFIG_DIR}/settings.xml" \
-#		-v "${HOME}/.m2/settings-security.xml":"${MAVEN_CONFIG_DIR}/settings-security.xml" \
+		-v "${HOME}/.m2/settings.xml":"${MAVEN_CONFIG_DIR}/settings.xml" \
+		-v "${HOME}/.m2/settings-security.xml":"${MAVEN_CONFIG_DIR}/settings-security.xml" \
 		-e MAVEN_CONFIG="${MAVEN_CONFIG_DIR}" \
 		-v "${JAVA_SRC_DIR}":/var/src  \
 		-w /var/src \

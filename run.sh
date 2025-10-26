@@ -1,8 +1,11 @@
 #!/bin/bash 
+
+#set -x
+
 JAVA_TARGET_DIR="$(cd "$(dirname $0)" && pwd)/target"
 JAVA_IMAGE=registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk11-2.2.0
 CONTAINER_CONF_FILE_PATH='/tmp/harvester.conf'
-JAVA_CMD="java -Xms10G -Xmx10G -Dlogdir=/logdir -jar /java-bin/oai-harvest-manager*.jar workdir=/workdir ${CONTAINER_CONF_FILE_PATH}"
+JAVA_CMD="java -Xms10G -Xmx10G -Dlogdir=/logdir -jar /target/harvest-manager*.jar workdir=/workdir ${CONTAINER_CONF_FILE_PATH}"
 WORKDIR="${WORKDIR:-$(pwd)/run/workdir}"
 LOGDIR="${LOGDIR:-$(pwd)/run/log}"
 CONFIG_FILE="$1"
@@ -13,7 +16,7 @@ if ! [ "${CONFIG_FILE}" ]; then
 fi
 
 if ! [ -e "${CONFIG_FILE}" ]; then
-	echo "File does not exist: $0" >&2
+	echo "File does not exist: $1" >&2
 	exit 1
 fi
 
@@ -27,7 +30,7 @@ echo "Log dir: ${LOGDIR}"
 
 docker run -it --rm \
 	--name "oai-harvest-test-${RANDOM}" \
-	--volume "${JAVA_TARGET_DIR}:/java-bin" \
+	--volume "${JAVA_TARGET_DIR}:/target" \
 	--volume "$(realpath "$CONFIG_FILE"):${CONTAINER_CONF_FILE_PATH}" \
 	--volume "${WORKDIR}:/workdir" \
 	--volume "${LOGDIR}:/logdir" \
