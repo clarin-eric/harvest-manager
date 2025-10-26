@@ -47,6 +47,8 @@ import javax.xml.xpath.XPathFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,8 +56,11 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
+import javax.xml.xpath.XPathException;
+import net.sf.saxon.lib.DirectResourceResolver;
 import net.sf.saxon.s9api.MessageListener2;
 import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.lib.ResourceResolver;
 
 /**
  * This class represents the application of an XSL transformation to the
@@ -63,6 +68,7 @@ import net.sf.saxon.s9api.XsltExecutable;
  * 
  * @author Lari Lampen (MPI-PL)
  */
+import net.sf.saxon.lib.ResourceRequest;
 public class TransformAction implements Action {
     private static final Logger logger = LogManager.getLogger(TransformAction.class);
     
@@ -156,7 +162,7 @@ public class TransformAction implements Action {
 
                 if (cacheDir != null) {
                     logger.debug("Setting the URLResolve to cache in "+cacheDir);
-                    transformer.setURIResolver(new TransformActionURLResolver(transformer.getURIResolver()));
+                    transformer.setResourceResolver(new TransformActionResourceResolver(transformer.getResourceResolver()));
                 }
                 
                 transformer.setSource(old.asSource());
@@ -213,41 +219,51 @@ public class TransformAction implements Action {
 	      return null;
     }
     
-    class TransformActionURLResolver implements URIResolver {
+    class TransformActionResourceResolver implements ResourceResolver {
+        private ResourceResolver resolver;
         
-        private URIResolver resolver;
-        
-        public TransformActionURLResolver(URIResolver resolver) {
+        public TransformActionResourceResolver(ResourceResolver resolver) {
             this.resolver = resolver;
         }
-        
-        public Source resolve(String href, String base) throws TransformerException {
-            logger.debug("Transformer resolver: resolve("+href+","+base+")");
-            String uri = href;
+
+        public Source resolve (ResourceRequest req) throws net.sf.saxon.trans.XPathException {
+            logger.debug("Transformer resolver: resolve("+req.relativeUri+","+req.baseUri+")");
+            String base = req.baseUri;
+            String uri = req.relativeUri;
             if (base != null && !base.equals("")) {
                 try {
-                    uri = (new URL(new URL(base),href)).toString();
-                } catch (MalformedURLException ex) {
-                    logger.error("Transformer resolver: couldn't resolve("+href+","+base+") continuing with just "+href,ex);
+                    uri = (new URI(base)).resolve(uri).toString();
+                } catch (URISyntaxException ex) {
+                    logger.error("Transformer resolver: couldn't resolve("+uri+","+base+") continuing with just "+uri,ex);
                 }
             }
             logger.debug("Transformer resolver: uri["+uri+"]");
-            String cacheFile = uri.replaceAll("[^a-zA-Z0-9]", "_");
-            logger.debug("Transformer resolver: check cache for "+cacheFile);
+            String cacheFile = "./" + uri.replaceAll("[^a-zA-Z0-9]", "_");
+            logger.debug("Transformer resolver: check cache for ["+cacheDir.resolve(cacheFile).toFile().toString()+"]");
             Source res = null;
             if (Files.exists(cacheDir.resolve(cacheFile))) {
                 res = new StreamSource(cacheDir.resolve(cacheFile).toFile());
-                logger.debug("Transformer resolver: loaded "+cacheFile+" from cache");
+                logger.debug("Transformer resolver: loaded ["+cacheDir.resolve(cacheFile).toFile().toString()+"] from cache");
             } else {
-                res = resolver.resolve(href, base);
                 try {
+                    if (resolver == null) 
+                        resolver = new DirectResourceResolver(Saxon.getProcessor().getUnderlyingConfiguration());
+                    //ResourceRequest request = new ResourceRequest();
+                    //request.relativeUri = uri;
+                    //request.baseUri = base;
+                    //request.uri = uri;
+                    //request.nature = ResourceRequest.XML_NATURE;
+                    //request.purpose = ResourceRequest.ANY_PURPOSE;
+                    //res = request.resolve(resolver);
+                    //res = resolver.resolve(request);
+                    res = req.resolve(resolver);
                     Saxon.save(res, cacheDir.resolve(cacheFile).toFile());
-                    logger.debug("Transformer resolver: stored "+cacheFile+" in cache");
-                } catch (SaxonApiException ex) {
-                    throw new TransformerException(ex);
+                    logger.debug("Transformer resolver: stored ["+cacheFile+"] in cache ["+cacheDir.resolve(cacheFile).toFile().toString()+"]");
+                } catch (Exception ex) {
+                    throw new net.sf.saxon.trans.XPathException(ex);
                 }
             }
-            return res;
+            return res;        
         }
     }
 
