@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import nl.mpi.oai.harvester.metadata.Record;
 
 /**
  * This class represents a sequence (or pipeline) of actions on metadata,
@@ -112,7 +113,7 @@ public class ActionSequence {
      *
      * @param metadata a metadata record
      */
-    public void runActions(Metadata metadata) {
+    public void runActions(Record metadata) {
         this.runActions(new ArrayList<>(Arrays.asList(metadata)));
     }
 
@@ -124,10 +125,10 @@ public class ActionSequence {
      *
      * @param metadata a list of metadata records
      */
-    public void runActions(List<Metadata> metadata) {
+    public void runActions(List<Record> metadata) {
 
-	// keep track of whether or not the action is the first in the sequence
-	boolean firstAction = true;
+        // keep track of whether or not the action is the first in the sequence
+        boolean firstAction = true;
 
         for (ResourcePool<Action> actPool : actions) {
                 // claim an action in the pool

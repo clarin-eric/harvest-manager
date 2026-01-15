@@ -1,0 +1,104 @@
+<!-- This is the configuration for CLARIAH NDE harvesting. -->
+<config>
+
+  <!-- ### configuration settings ### -->
+  <settings>
+    <!-- Working directory. -->
+    <workdir>workspace</workdir>
+
+    <!-- Maximum number of attempts per record before giving up. -->
+    <max-retry-count>2</max-retry-count>
+
+    <!-- Delay between retries of a record (seconds). -->
+    <retry-delay>10</retry-delay>
+
+    <!-- Maximum number of concurrent harvester threads -->
+    <max-jobs>4</max-jobs>
+
+    <!-- Number of resources placed in the resource pool. -->
+    <resource-pool-size>4</resource-pool-size>
+
+    <!-- Default timeout (for connection and reading) for a single
+    http request in seconds. If unspecified, will be INFINITE.  -->
+    <timeout>60</timeout>
+
+    <!-- File used to store endpoint -> directory mappings -->
+    <map-file>map.csv</map-file>
+
+    <!-- Protocol to use,
+    if shortname, for example, OAI-PMH or NDE presents, we should search for short name
+    else assume the given string is a fully qualified domain name in reverse order.
+    When the file attribute is present, load the jar and search for the protocol in the jar,
+    otherwise search for it in the local domain. -->
+    <protocol>nl.mpi.oai.harvester.protocol.NdeProtocol</protocol>
+    <scenario>ListRecords</scenario>
+
+    <nde-ListRecords-sparql text-expand="yes" endpoint="https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry">
+      PREFIX dcat: &lt;http://www.w3.org/ns/dcat#>
+      PREFIX dct: &lt;http://purl.org/dc/terms/>
+      PREFIX dc: &lt;http://purl.org/dc/elements/1.1/>
+      PREFIX owl: &lt;http://www.w3.org/2002/07/owl#>
+
+      SELECT * WHERE
+      {{
+      BIND (&lt;{$provider-url}> as ?publisher)
+
+      ?dataset a dcat:Dataset ;
+      dct:title ?title ;
+      dct:license ?license ;
+      dct:publisher ?publisher .
+
+      OPTIONAL {{ ?dataset dct:description ?description }}
+      OPTIONAL {{ ?dataset dcat:keyword ?keyword }}
+      OPTIONAL {{ ?dataset dcat:landingPage ?landingPage }}
+      OPTIONAL {{ ?dataset dct:source ?source }}
+      OPTIONAL {{ ?dataset dct:created ?created }}
+      OPTIONAL {{ ?dataset dct:modified ?modified }}
+      OPTIONAL {{ ?dataset dct:issued ?published }}
+      OPTIONAL {{ ?dataset owl:versionInfo ?version }}
+
+      OPTIONAL {{ ?dataset dcat:distribution ?distribution .
+      ?distribution dcat:accessURL ?distribution_url .
+      }}
+      OPTIONAL {{ ?distribution dcat:mediaType ?distribution_mediaType }}
+      OPTIONAL {{ ?distribution dct:format ?distribution_format }}
+      OPTIONAL {{ ?distribution dct:issued ?distribution_published }}
+      OPTIONAL {{ ?distribution dct:modified ?distribution_modified }}
+      OPTIONAL {{ ?distribution dct:description ?distribution_description }}
+      OPTIONAL {{ ?distribution dct:license ?distribution_license }}
+      OPTIONAL {{ ?distribution dct:title ?distribution_title }}
+      OPTIONAL {{ ?distribution dcat:byteSize ?distribution_size }}
+      }}
+    </nde-ListRecords-sparql>
+
+    <incremental>false</incremental>
+    <dry-run>false</dry-run>
+  </settings>
+
+  <!-- ### output directories (referenced in the action section) ### -->
+  <directories>
+    <!-- When the attribute 'max-files' is non-zero, subdirectories
+         will be created to ensure no directory has more than that
+         number of files. -->
+    <dir path="cmdi" id="rec" max-files="0"/>
+    <dir path="middle" id="request" max-files="0"/>
+  </directories>
+
+  <!-- ### actions to take on metadata formats (in order of preference) ### -->
+  <actions>
+    <format match="type" value="*">
+      <action type="transform" file="https://raw.githubusercontent.com/CLARIAH/harvest-config/main/srx-split.xsl"/>
+      <action type="save" dir="request" suffix=".xml"/>
+      <action type="xml-split"/>
+      <action type="transform" file="https://raw.githubusercontent.com/CLARIAH/harvest-config/main/srx2cmdi.xsl"/>
+      <action type="save" dir="rec" suffix=".xml"/>
+    </format>
+  </actions>
+
+  <!-- ### list of providers ### -->
+  <providers>
+<!--    <nde-registry url="https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry"/>-->
+    <provider url="http://data.bibliotheken.nl/id/thes/p075301482" name="KB"/>
+    <provider url="https://www.beeldengeluid.nl" name="SV"/>
+  </providers>
+</config>

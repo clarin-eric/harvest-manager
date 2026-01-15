@@ -114,12 +114,15 @@
       <!-/-<filter>Subject and Keywords = Humanities - Languages and literature (6.2) or Humanities - Other humanities (6.5))</filter>-/->
       <filter xmlns:dc="http://purl.org/dc/elements/1.1/">.//dc:subject[contains(.,'(6.2)') or contains(.,'(6.5)')]</filter>
       <!-/-<set>DELFT.UU</set>-/->
-    </provider>-->
+    </provider>
     <provider url="https://www.meertens.knaw.nl/flat/oai2">
       <filter>.//*:title[contains(.,'dwangarbeider')]</filter>
     </provider>
-    <!--<provider url="https://arche.acdh.oeaw.ac.at/oaipmh/" timeout="300">
+    <provider url="https://arche.acdh.oeaw.ac.at/oaipmh/" timeout="300">
       <set>clarin-vlo</set>
     </provider>-->
+    <provider url="https://ssh.datastations.nl/oai" name="DANS">
+      <set>humanities</set>
+    </provider>
   </providers>
 </config>

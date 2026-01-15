@@ -1,7 +1,7 @@
 # 1.2.0
 Changes compared to 1.1.0
 
-- for XSLT [SaxonUtils](https://github.com/TLA-FLAT/SaxonUtils) is used, so extensionfunctions for dynamic XPat evaluation can easily be used
+- for XSLT [SaxonUtils](https://github.com/TLA-FLAT/SaxonUtils) is used, so extensionfunctions for dynamic XPath evaluation can easily be used
 - the Transform action now provides access to the configuration to the stylesheet, so records can be filtered, transformed on the basis of info from the configuration
 - the JSON API of the Centre Registry is used instead of the XML one
 - no external processing is needed anymore to complete the mapping from directory names to endpoint and centre info

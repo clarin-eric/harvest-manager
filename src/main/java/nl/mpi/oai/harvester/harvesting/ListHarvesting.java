@@ -18,6 +18,7 @@
 
 package nl.mpi.oai.harvester.harvesting;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import nl.mpi.oai.harvester.Provider;
 import nl.mpi.oai.harvester.control.FileSynchronization;
 import nl.mpi.oai.harvester.control.Main;
@@ -102,13 +103,13 @@ public abstract class ListHarvesting extends AbstractListHarvesting implements
      * @throws NoSuchFieldException introspection problem
      */
     abstract DocumentSource verb2(String metadataPrefix, String resumptionToken, int timeout)
-            throws 
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException;
+        throws
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException;
 
     /**
      * Verb with five string parameters. A subclass needs to make this verb 
@@ -129,13 +130,13 @@ public abstract class ListHarvesting extends AbstractListHarvesting implements
      */
     abstract DocumentSource verb5(String endpoint, String fromDate, String untilDate, String metadataPrefix,
             String set, int timeout, Path temp)
-            throws 
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException;
+        throws
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException;
 
     /**
      * Get the token indicating more data is available. Since a HarvesterVerb 
@@ -237,12 +238,7 @@ public abstract class ListHarvesting extends AbstractListHarvesting implements
                 resumptionToken = getToken();
                 if( FileSynchronization.getProviderStatistic(provider) !=null)
                     FileSynchronization.getProviderStatistic(provider).incRequestCount();
-            } catch (IOException
-                    | ParserConfigurationException
-                    | SAXException
-                    | TransformerException
-                    | NoSuchFieldException
-                    | XMLStreamException e) {
+            } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchFieldException | XMLStreamException | SaxonApiException e) {
 
                 // invalidate the assumption that everything went fine
                 done = false;

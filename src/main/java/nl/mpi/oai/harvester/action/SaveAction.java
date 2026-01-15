@@ -46,6 +46,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import nl.mpi.oai.harvester.metadata.Record;
 
 /**
  * This class represents the action of saving a record onto the file system.
@@ -78,9 +79,17 @@ public class SaveAction implements Action {
     }
 
     @Override
-    public boolean perform(List<Metadata> records) {
+    public boolean perform(List<Record> records) {
 
-        for (Metadata record : records) {
+        for (Record rec : records) {
+            
+            if (!(rec instanceof Metadata)) {
+                logger.error("Save action doesn't support this type["+rec.getClass()+"] of records!");
+                return false;
+            }
+            
+            Metadata record = (Metadata)rec;
+            
             OutputStream os = null;
             XMLEventReader reader = null;
             XMLEventWriter writer = null;

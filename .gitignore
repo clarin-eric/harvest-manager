@@ -3,6 +3,7 @@ target/
 *.iml
 /target-old/
 run/
+test/
 
 /nbproject/
 nb-configuration.xml
@@ -14,3 +15,10 @@ nbactions.xml
 .settings
 .vscode
 .DS_Store
+/run*
+map.csv
+overview.xml
+workspace/middle/KB/KB.xml
+workspace/middle/SV/SV.xml
+/target_test-classes
+build.log

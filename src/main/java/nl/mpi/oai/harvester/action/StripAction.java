@@ -20,6 +20,7 @@ package nl.mpi.oai.harvester.action;
 
 import nl.mpi.oai.harvester.control.Util;
 import nl.mpi.oai.harvester.metadata.Metadata;
+import nl.mpi.oai.harvester.metadata.Record;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.stax2.XMLInputFactory2;
@@ -71,11 +72,11 @@ public class StripAction implements Action {
     }
 
     @Override
-    public boolean perform(List<Metadata> records) {
+    public boolean perform(List<Record> records) {
         List<Metadata> newRecords = new ArrayList<>();
-        while (!records.isEmpty()) {
-            Metadata record = records.remove(0);
-            
+        for (Record rec : records) {
+            Metadata record = (Metadata)rec;
+
             if (record.hasDoc()) {
                 // Get the child nodes of the "metadata" tag;
                 // that's the content of the response without the

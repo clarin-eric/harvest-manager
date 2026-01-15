@@ -139,7 +139,7 @@ public class StaticProvider extends Provider {
 
     @Override
     public  String getProviderName() {
-	Document doc = getSubtree("/os:Repository/os:Identify");
+	Document doc = getSubtree("/Repository/Identify");
 	return parseProviderName(doc);
     }
 
@@ -158,7 +158,7 @@ public class StaticProvider extends Provider {
     public List<String> getIdentifiers(String mdPrefix) throws IOException,
 	    ParserConfigurationException, SAXException, TransformerException,
 	    XPathExpressionException, NoSuchFieldException {
-	Document doc = getSubtree("/os:Repository/os:ListRecords[@metadataPrefix = '"+mdPrefix+"']");
+	Document doc = getSubtree("/Repository/ListRecords[@metadataPrefix = '"+mdPrefix+"']");
 	List<String> ids = new ArrayList<>();
 	addIdentifiers(doc, ids);
 	return ids;
@@ -166,8 +166,8 @@ public class StaticProvider extends Provider {
 
     @Override
     public Metadata getRecord(String id, String mdPrefix) {
-	String xp = "/os:Repository/os:ListRecords[@metadataPrefix = '"
-		+ mdPrefix + "']/oai:record[./oai:header/oai:identifier/text() = '"
+	String xp = "/Repository/ListRecords[@metadataPrefix = '"
+		+ mdPrefix + "']/record[./header/identifier/text() = '"
 		+ id + "']";
 	Document doc = getSubtree(xp);
 	if (doc == null) return null;

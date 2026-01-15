@@ -1,0 +1,19 @@
+FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk11-1.2.12
+
+RUN apk add --no-cache gnu-libiconv
+WORKDIR /tmp/oai
+COPY ./target/oai-harvest-manager-1.2*.tar.gz /tmp/
+
+RUN tar -xzf /tmp/oai-harvest-manager-1.2*.tar.gz
+
+# app workdir
+RUN mkdir -p /app/workdir
+
+WORKDIR /app/oai
+RUN mv /tmp/oai /app
+RUN ls -la /app && ls -la /app/oai
+
+ENTRYPOINT ["/app/oai/run-harvester.sh"]
+
+# cleanup
+RUN rm -rf /tmp/*

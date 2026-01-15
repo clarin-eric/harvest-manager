@@ -17,12 +17,12 @@
 
 package ORG.oclc.oai.harvester2.verb;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.io.*;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xpath.XPathAPI;
+//import org.apache.xpath.XPathAPI;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -33,27 +33,31 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.XMLStreamException;
 import nl.mpi.oai.harvester.utils.DocumentSource;
 import nl.mpi.oai.harvester.utils.MarkableFileInputStream;
+import nl.mpi.tla.util.Saxon;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmItem;
+
 import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.codehaus.stax2.evt.XMLEvent2;
@@ -68,6 +72,7 @@ public abstract class HarvesterVerb {
 
     /* Primary OAI namespaces */
     public static final String SCHEMA_LOCATION_V2_0 = "http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
+    public static final String SCHEMA_LOCATION_V2_0_HTTPS = "http://www.openarchives.org/OAI/2.0/ https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
     public static final String SCHEMA_LOCATION_V1_1_GET_RECORD = "http://www.openarchives.org/OAI/1.1/OAI_GetRecord http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd";
     public static final String SCHEMA_LOCATION_V1_1_IDENTIFY = "http://www.openarchives.org/OAI/1.1/OAI_Identify http://www.openarchives.org/OAI/1.1/OAI_Identify.xsd";
     public static final String SCHEMA_LOCATION_V1_1_LIST_IDENTIFIERS = "http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd";
@@ -80,6 +85,7 @@ public abstract class HarvesterVerb {
     private String requestURL = null;
     private static HashMap builderMap = new HashMap();
     private static Element namespaceElement = null;
+    private static Map<String,String> NAMESPACES = new LinkedHashMap<>();
     private static DocumentBuilderFactory factory = null;
     private static TransformerFactory xformFactory = TransformerFactory.newInstance();
     
@@ -94,36 +100,16 @@ public abstract class HarvesterVerb {
 	        builderMap.put(t, builder);
 	        
 	        DOMImplementation impl = builder.getDOMImplementation();
-	        Document namespaceHolder = impl.createDocument(
-	                "http://www.oclc.org/research/software/oai/harvester",
-	                "harvester:namespaceHolder", null);
-	        namespaceElement = namespaceHolder.getDocumentElement();
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:harvester",
-	        "http://www.oclc.org/research/software/oai/harvester");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai20", "http://www.openarchives.org/OAI/2.0/");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai11_GetRecord",
-	        "http://www.openarchives.org/OAI/1.1/OAI_GetRecord");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai11_Identify",
-	        "http://www.openarchives.org/OAI/1.1/OAI_Identify");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai11_ListIdentifiers",
-	        "http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers");
-	        namespaceElement
-	        .setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai11_ListMetadataFormats",
-	        "http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai11_ListRecords",
-	        "http://www.openarchives.org/OAI/1.1/OAI_ListRecords");
-	        namespaceElement.setAttributeNS("http://www.w3.org/2000/xmlns/",
-	                "xmlns:oai11_ListSets",
-	        "http://www.openarchives.org/OAI/1.1/OAI_ListSets");
+
+            NAMESPACES.put("harvester", "http://www.oclc.org/research/software/oai/harvester");
+            NAMESPACES.put("xsi","http://www.w3.org/2001/XMLSchema-instance");
+            NAMESPACES.put("oai20","http://www.openarchives.org/OAI/2.0/");
+            NAMESPACES.put("oai11_GetRecord","http://www.openarchives.org/OAI/1.1/OAI_GetRecord");
+            NAMESPACES.put("oai11_Identify","http://www.openarchives.org/OAI/1.1/OAI_Identify");
+            NAMESPACES.put("oai11_ListIdentifiers","http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers");
+            NAMESPACES.put("oai11_ListMetadataFormats","http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats");
+            NAMESPACES.put("oai11_ListRecords","http://www.openarchives.org/OAI/1.1/OAI_ListRecords");
+            NAMESPACES.put("oai11_ListSets","http://www.openarchives.org/OAI/1.1/OAI_ListSets");
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
@@ -176,19 +162,41 @@ public abstract class HarvesterVerb {
                 builder = factory.newDocumentBuilder();
                 builderMap.put(t, builder);
             }
-            doc = builder.parse(getSource());
+            URL dtdFilePath = getClass().getResource("/xhtml1.dtd");
+            assert dtdFilePath != null;
+            String xmlText = IOUtils.toString(getStream(), StandardCharsets.UTF_8);
+            logger.debug("dtdFilePath is: " + dtdFilePath);
+
+            if (xmlText.startsWith("<html")) {
+                try {
+                    xmlText = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML//EN' '"  + dtdFilePath.toURI() + "'>" + xmlText;
+                    logger.debug("after xmlText is set " + dtdFilePath.toURI());
+                } catch (URISyntaxException e) {
+                    logger.error(e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+            }
+
+            doc = builder.parse(new InputSource(new StringReader(xmlText)));
+//            doc = builder.parse(getSource());
             str = null;
             logger.debug("switched from stream to tree for request["+requestURL+"]",new Throwable());
         }
         return doc;
     }
+
+//    private void addDocType(String rootTag, String docType, InputSource originalInputSource) {
+//        originalInputSource.
+//    }
     
     /**
      * Get the xsi:schemaLocation for the OAI response
      * 
      * @return the xsi:schemaLocation value
      */
-    public String getSchemaLocation() throws TransformerException, ParserConfigurationException, SAXException, IOException, XMLStreamException {
+    public String getSchemaLocation()
+        throws TransformerException, ParserConfigurationException, SAXException, IOException, XMLStreamException,
+        SaxonApiException {
         if (this.schemaLocation == null) {
             if (hasDocument()) {
                 this.schemaLocation = getSingleString("/*/@xsi:schemaLocation");
@@ -228,8 +236,8 @@ public abstract class HarvesterVerb {
      * @return a NodeList of /oai:OAI-PMH/oai:error elements
      * @throws TransformerException
      */
-    public NodeList getErrors() throws TransformerException, ParserConfigurationException, SAXException, IOException, XMLStreamException {
-        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
+    public List<Node> getErrors() throws TransformerException, ParserConfigurationException, SaxonApiException, SAXException, IOException, XMLStreamException {
+        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())||SCHEMA_LOCATION_V2_0_HTTPS.equals(getSchemaLocation())) {
             return getNodeList("/oai20:OAI-PMH/oai20:error");
         } else {
             return null;
@@ -286,84 +294,7 @@ public abstract class HarvesterVerb {
      * @throws TransformerException
      */
     public void harvest(String requestURL, int timeout, Path temp) throws MalformedURLException, IOException {
-        this.requestURL = requestURL;
-        logger.debug("requestURL=" + this.requestURL);
-        InputStream in = null;
-        URL url = new URL(this.requestURL);
-        HttpURLConnection con = null;
-        int responseCode = 0;
-        do {
-            con = (HttpURLConnection) url.openConnection();
-            con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
-            con.setRequestProperty("Accept-Encoding",
-            "compress, gzip, identify");
-            if (timeout > 0) {
-                logger.debug("timeout=" + timeout);
-                con.setConnectTimeout(timeout*1000);
-                con.setReadTimeout(timeout*1000);
-            }
-            try {
-                responseCode = con.getResponseCode();
-                logger.debug("responseCode=" + responseCode);
-            } catch (FileNotFoundException e) {
-                // assume it's a 503 response
-                logger.info(requestURL, e);
-                responseCode = HttpURLConnection.HTTP_UNAVAILABLE;
-            } catch(Exception e) {
-                logger.error("couldn't connect to '"+requestURL+"': "+e.getMessage());
-                throw e;
-            }
-            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_TEMP || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
-                this.requestURL = con.getHeaderField("Location");
-                logger.debug("redirect to requestURL=" + this.requestURL);
-                url = new URL(this.requestURL);
-                responseCode = HttpURLConnection.HTTP_UNAVAILABLE;
-            } else if (responseCode == HttpURLConnection.HTTP_UNAVAILABLE) {
-                long retrySeconds = con.getHeaderFieldInt("Retry-After", -1);
-                if (retrySeconds == -1) {
-                    long now = (new Date()).getTime();
-                    long retryDate = con.getHeaderFieldDate("Retry-After", now);
-                    retrySeconds = retryDate - now;
-                }
-                if (retrySeconds == 0) { // Apparently, it's a bad URL
-                    throw new FileNotFoundException("Bad URL["+requestURL+"]?");
-                }
-                logger.debug("Retry-After=" + retrySeconds);
-                if (retrySeconds > 0) {
-                    try {
-                        Thread.sleep(retrySeconds * 1000);
-                    } catch (InterruptedException ex) {
-                        logger.error(ex);
-                    }
-                }
-            }
-        } while (responseCode == HttpURLConnection.HTTP_UNAVAILABLE);
-        String contentEncoding = con.getHeaderField("Content-Encoding");
-        logger.debug("Content-Encoding=" + contentEncoding);
-        if ("compress".equals(contentEncoding)) {
-            ZipInputStream zis = new ZipInputStream(con.getInputStream());
-            zis.getNextEntry();
-            in = zis;
-        } else if ("gzip".equals(contentEncoding)) {
-            in = new GZIPInputStream(con.getInputStream());
-        } else if ("deflate".equals(contentEncoding)) {
-            in = new InflaterInputStream(con.getInputStream());
-        } else {
-            in = con.getInputStream();
-        }
-        
-        if (temp!=null) {
-            FileOutputStream out = new FileOutputStream(temp.toFile());
-            org.apache.commons.io.IOUtils.copy(in,out,1000000);
-            out.close();
-            logger.debug("temp["+temp+"] for URL["+requestURL+"]");
-            str = new MarkableFileInputStream(new FileInputStream(temp.toFile()));
-        } else {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int size = org.apache.commons.io.IOUtils.copy(in, baos);
-            logger.debug("buffered ["+size+"] bytes for URL["+requestURL+"]");
-            str = new ByteArrayInputStream(baos.toByteArray());
-        }
+        str = DocumentSource.fetch(requestURL,null,null,null,timeout,temp).getStream();
     }
     
     /**
@@ -373,7 +304,8 @@ public abstract class HarvesterVerb {
      * @return a String containing the value of the XPath location.
      * @throws TransformerException
      */
-    public String getSingleString(String xpath) throws TransformerException, ParserConfigurationException, SAXException, IOException {
+    public String getSingleString(String xpath)
+        throws TransformerException, ParserConfigurationException, SAXException, IOException, SaxonApiException {
         return getSingleString(getDocument(), xpath);
 //        return XPathAPI.eval(getDocument(), xpath, namespaceElement).str();
 //      String str = null;
@@ -387,8 +319,9 @@ public abstract class HarvesterVerb {
     }
     
     public String getSingleString(Node node, String xpath)
-    throws TransformerException {
-        return XPathAPI.eval(node, xpath, namespaceElement).str();
+    throws SaxonApiException {
+        return Saxon.xpath2string(Saxon.wrapNode(node), xpath, null, NAMESPACES);
+//        return XPathAPI.eval(node, xpath, namespaceElement).str();
     }
     
     /**
@@ -398,8 +331,15 @@ public abstract class HarvesterVerb {
      * @return the NodeList for the xpath into the response DOM
      * @throws TransformerException
      */
-    public NodeList getNodeList(String xpath) throws TransformerException, ParserConfigurationException, SAXException, IOException {
-        return XPathAPI.selectNodeList(getDocument(), xpath, namespaceElement);
+    public List<Node> getNodeList(String xpath) throws SaxonApiException, ParserConfigurationException, SAXException, IOException {
+//        return XPathAPI.selectNodeList(getDocument(), xpath, namespaceElement);
+
+        List<Node> res = new ArrayList<>();
+        for (XdmItem item : Saxon.xpathList(Saxon.wrapNode(getDocument()), xpath, null, NAMESPACES)) {
+            res.add((Node) Saxon.wrapNode((Node) item));
+        }
+
+        return res;
     }
     
     public String toString() {

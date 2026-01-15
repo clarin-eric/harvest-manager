@@ -1,7 +1,7 @@
-oai-harvest-manager
+harvest-manager
 ===================
 
-OAI Harvest Manager is a Java application for managing OAI-PMH
+The Harvest Manager is a Java application for managing (OAI-PMH)
 harvesting. It is intended to allow definition of a harvesting
 workflow (involving OAI harvesting and subsequent operations like
 transformations or mappings of metadata between schemata) in a few
@@ -11,6 +11,8 @@ This application contains a modified version of the
 [OCLC harvester2 library](https://github.com/OCLC-Research/oaiharvester2)
 ([license](http://www.apache.org/licenses/LICENSE-2.0.html)),
 which implements the OAI-PMH requests.
+
+Since version 2.0 its possible to extent the harvester with other protocols than OAI-PMH.
 
 
 # Basic Glossary
@@ -269,3 +271,38 @@ action actionSequences, and 5 each for the directories ```cmdi``` and
 The pooling implementation is particularly important when
 transformations are used, as preparing a transformation object
 involves parsing the XSLT, potentially a time-consuming process.
+
+# Extensions
+
+Since 2.0 it is possible to go beyond the OAI protocol and the builtin actions. To do so Java mrelection is used.
+
+## Protocols
+
+To add a new protocol the Protocol interface at
+[nl.mpi.oai.harvester.protocol.Protocol](src/main/java/nl/mpi/oai/harvester/protocol/Protocol.java) has to be implemented. In the configuration one can tell the manager which protocol to load, e.g.
+
+```xml
+<config>
+  ...
+  <protocol>nl.mpi.oai.harvester.protocol.NdeProtocol</protocol>
+  ...
+</config>
+```
+
+## Actions
+
+To add a new action the Action interface at
+[nl.mpi.oai.harvester.action.Action](src/main/java/nl/mpi/oai/harvester/action/Action.java) has to be implemented. In the configuration one can tell the manager which action to load, e.g.
+
+```xml
+<config>
+  ...
+<actions>
+    <format match="type" value="*">
+      ...
+      <action type="nl.mpi.oai.harvester.action.NDESplitAction"/>  
+      ...
+    </format>
+    ...
+</config>
+```

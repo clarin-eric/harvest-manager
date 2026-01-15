@@ -48,7 +48,7 @@
       <action type="strip"/>
       <action type="save" dir="cmdi-1_2" suffix=".xml" history="true"/>
       <action type="nl.mpi.oai.harvester.action.SplitAction" />
-      <!--<action type="nl.knaw.huc.di.sd.HelloWorldAction" file="/Users/vic/Documents/DI/projects/oai-harvest-manager-action/target/oai-harvester-manager-action-1.0-SNAPSHOT.jar" />-->
+      <action type="nl.knaw.huc.di.sd.HelloWorldAction" file="/Users/vic/Documents/DI/projects/oai-harvest-manager-action/target/oai-harvester-manager-action-1.0-SNAPSHOT.jar" />
       <action type="nl.knaw.huc.di.sd.HelloWorldAction" file="oai-harvester-manager-action-1.0-SNAPSHOT.jar" />
     </format>
     <format match="namespace" value="http://www.clarin.eu/cmd/">

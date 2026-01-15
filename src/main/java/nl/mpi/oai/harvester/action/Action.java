@@ -21,6 +21,7 @@ package nl.mpi.oai.harvester.action;
 import nl.mpi.oai.harvester.metadata.Metadata;
 
 import java.util.List;
+import nl.mpi.oai.harvester.metadata.Record;
 
 /**
  * This class represents an action to be performed on a metadata record; for
@@ -37,7 +38,7 @@ public interface Action {
      * @return true on success; false if the action failed, leaving
      *         the records unchanged
      */
-    boolean perform(List<Metadata> records);
+    boolean perform(List<Record> records);
 
     /**
      * Create a copy of this action. (This is used in preference to the

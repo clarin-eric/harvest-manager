@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#set -x
+
 #####################################################################################
 # Script for building the OAI harvest manager without depending on a local 
 # Java / Maven environment. Requires docker to be installed and available to the current user!
@@ -17,8 +19,8 @@
 #####################################################################################
 
 #configuration
-APP_NAME="oai-harvest-manager"
-MAVEN_IMAGE="maven:3.6.3-jdk-11"
+APP_NAME="harvest-manager"
+MAVEN_IMAGE="maven:3.8.6-jdk-11"
 CLEAN_CACHE=${CLEAN_CACHE:-false}
 
 SCRIPT_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
@@ -27,6 +29,7 @@ MAVEN_CONFIG_DIR="/root/.m2"
 BUILD_CONTAINER_NAME="${APP_NAME}-maven-build"
 
 MAVEN_OPTS="$@"
+#MAVEN_CMD="${MAVEN_CMD:-mvn -DskipTests=true clean install deploy} ${MAVEN_OPTS}"
 MAVEN_CMD="${MAVEN_CMD:-mvn clean install} ${MAVEN_OPTS}"
 
 if ! [ "${JAVA_SRC_DIR}" ]; then
@@ -87,6 +90,8 @@ docker_run() {
 		--rm \
 		--name "${BUILD_CONTAINER_NAME}" \
 		-v "${MAVEN_CONFIG_IMAGE}":"${MAVEN_CONFIG_DIR}" \
+		-v "${HOME}/.m2/settings.xml":"${MAVEN_CONFIG_DIR}/settings.xml" \
+		-v "${HOME}/.m2/settings-security.xml":"${MAVEN_CONFIG_DIR}/settings-security.xml" \
 		-e MAVEN_CONFIG="${MAVEN_CONFIG_DIR}" \
 		-v "${JAVA_SRC_DIR}":/var/src  \
 		-w /var/src \

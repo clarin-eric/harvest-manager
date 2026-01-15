@@ -56,9 +56,9 @@ import java.util.List;
  * 
  * @author Menzo Windhouwer (CLARIN-ERIC)
  */
-public class SplitAction implements Action {
+public class XMLSplitAction implements Action {
 
-    private final Logger logger = LogManager.getLogger(SplitAction.class);
+    private final Logger logger = LogManager.getLogger(XMLSplitAction.class);
 
     private final XPath xpath;
     private final DocumentBuilder db;
@@ -67,7 +67,7 @@ public class SplitAction implements Action {
         START,RECORD,HEADER,ID,METADATA,STOP,ERROR
     }
 
-    public SplitAction() throws ParserConfigurationException {
+    public XMLSplitAction() throws ParserConfigurationException {
 	XPathFactory xpf = XPathFactory.newInstance();
 	xpath = xpf.newXPath();	
 	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -82,11 +82,7 @@ public class SplitAction implements Action {
             Metadata record = (Metadata)rec;
 
             if (record.hasDoc()) {
-
-                // Get the child nodes of the "metadata" tag;
-                // that's the content of the response without the
-                // OAI-PMH envelope.
-
+                logger.debug("Found record and has doc, record id: ["+record.getId()+"]");
                 NodeList content = null;
                 try {
                     content = (NodeList) xpath.evaluate("//*[local-name()='record']",
@@ -94,7 +90,6 @@ public class SplitAction implements Action {
                 } catch (XPathExpressionException ex) {
                     logger.error(ex);
                 }
-
                 if ((content != null) && (content.getLength()>0)) {
                     for (int i=0;i<content.getLength();i++) {
                         Document doc = db.newDocument();
@@ -102,22 +97,15 @@ public class SplitAction implements Action {
                         doc.appendChild(copy);
                         String id = "";
                         try {
-                            String status = (String) xpath.evaluate(
-                                "./*[local-name()='header']/@status",
-                                content.item(i),XPathConstants.STRING);
                             id = (String) xpath.evaluate(
-                                "./*[local-name()='header']/*[local-name()='identifier']",
-                                content.item(i),XPathConstants.STRING);
-                            if (!status.equals("deleted")) {
-                                logger.debug("split off XML doc["+i+"]["+id+"] with ["+xpath.evaluate("count(//*)", doc)+"] nodes");
+                                    "./*[local-name()='record']/@id",
+                                    content.item(i),XPathConstants.STRING);
+
+                            if (id == null || id.equals("")) id = "rec-"+i;
+                            logger.debug("split off XML doc["+i+"]["+id+"]");
                                 newRecords.add( new Metadata(
                                         id, record.getPrefix(),
                                         doc, record.getOrigin(), false, false));
-
-                            } else {
-                                logger.warn("record[" + id + "] is marked as deleted");
-                                FileSynchronization.saveFilesToRemove(Util.toFileFormat(id) + ".xml", record.getOrigin());
-                            }
                         } catch (XPathExpressionException ex) {
                             logger.error(ex);
                         }
@@ -164,6 +152,9 @@ public class SplitAction implements Action {
                                                 status = null;
                                                 id = null;
                                                 depth = 1;
+                                                Attribute attr = event.asStartElement().getAttributeByName(new QName("id"));
+                                                if (attr!=null) {
+                                                    id = attr.getValue();                                                }
                                             }
                                             break;
                                     }
@@ -173,15 +164,6 @@ public class SplitAction implements Action {
                                     switch (eventType) {
                                         case XMLEvent2.START_ELEMENT:
                                             depth++;
-                                            //logger.debug("start["+event.asStartElement().getName()+"] depth["+depth+"]");
-                                            if (depth==2 && event.asStartElement().getName().getLocalPart().equals("header")) { //record/header
-                                                Attribute attr = event.asStartElement().getAttributeByName(new QName("status"));
-                                                if (attr!=null) {
-                                                    status = attr.getValue();//record/header/@status
-                                                    //logger.debug("status["+status+"]");
-                                                }
-                                                state = State.HEADER;
-                                            }
                                             break;
                                         case XMLEvent2.END_ELEMENT:
                                             //logger.debug("end["+event.asEndElement().getName()+"] depth["+depth+"]");
@@ -199,64 +181,19 @@ public class SplitAction implements Action {
                                     writer.add(event);
                                     if (state==State.START) {
                                         writer.close();
-                                        if (status == null || !status.equals("deleted")) {
-                                            logger.debug("split off XML stream["+i+"]["+id+"] with ["+baos.size()+"] bytes");
-                                            newRecords.add(new Metadata(
-                                                id, record.getPrefix(),
-                                                new ByteArrayInputStream(baos.toByteArray()),
-                                                record.getOrigin(),
-                                                false, false)
-                                            );
-                                        }
-                                        if("deleted".equals(status)){
-                                            FileSynchronization.saveFilesToRemove(Util.toFileFormat(id) + ".xml", record.getOrigin());
-                                        }
+                                        logger.debug("split off XML stream["+i+"]["+id+"] with ["+baos.size()+"] bytes");
+                                        newRecords.add(new Metadata(
+                                            id, record.getPrefix(),
+                                            new ByteArrayInputStream(baos.toByteArray()),
+                                            record.getOrigin(),
+                                            false, false)
+                                        );
 
                                         writer = null;
                                         baos = null;
                                         status = null;
                                         id = null;
                                     }
-                                    break;
-                                case HEADER:
-                                    //logger.debug("state[HEADER] depth["+depth+"]");
-                                    switch (eventType) {
-                                        case XMLEvent2.START_ELEMENT:
-                                            depth++;
-                                            //logger.debug("start["+event.asStartElement().getName()+"] depth["+depth+"]");
-                                            if (event.asStartElement().getName().getLocalPart().equals("identifier")) {//record/header/identifier
-                                                state = State.ID;
-                                            }
-                                            break;
-                                        case XMLEvent2.END_ELEMENT:
-                                            //logger.debug("end["+event.asEndElement().getName()+"] depth["+depth+"]");
-                                            if (depth==2) { 
-                                                if (event.asEndElement().getName().getLocalPart().equals("header")) {
-                                                    state = State.RECORD;
-                                                } else {
-                                                    logger.error("header XML element out of sync! Expected header got ["+event.asEndElement().getName()+"]");
-                                                    state = State.ERROR;
-                                                }
-                                            }
-                                            depth--;
-                                            break;
-                                    }
-                                    writer.add(event);
-                                    break;
-                                case ID:
-                                    //logger.debug("state[ID] depth["+depth+"]");
-                                    switch (eventType) {
-                                        case XMLEvent2.CHARACTERS:
-                                            id = event.asCharacters().getData();//record/header/identifier/text()
-                                            //logger.debug("id["+id+"]");
-                                            state = State.HEADER;
-                                            break;
-                                        default:
-                                            state = State.ERROR;
-                                            logger.error("identifier XML element out of sync!");
-                                            break;
-                                    }
-                                    writer.add(event);
                                     break;
                             }
                             if (reader.hasNext())
@@ -291,7 +228,7 @@ public class SplitAction implements Action {
 
     @Override
     public String toString() {
-	return "split";
+	return "xml-split";
     }
 
     // All split actions are equal.
@@ -301,7 +238,7 @@ public class SplitAction implements Action {
     }
     @Override
     public boolean equals(Object o) {
-        return o instanceof SplitAction;
+        return o instanceof XMLSplitAction;
     }
 
     @Override
@@ -309,7 +246,7 @@ public class SplitAction implements Action {
 	try {
 	    // All split actions are the same. This is effectively a "deep"
 	    // copy since it has its own XPath object.
-	    return new SplitAction();
+	    return new XMLSplitAction();
 	} catch (ParserConfigurationException ex) {
 	    logger.error(ex);
 	}

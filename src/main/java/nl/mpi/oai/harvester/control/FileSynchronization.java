@@ -47,9 +47,9 @@ public final class FileSynchronization {
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private static final String currentDate = formatter.format(new Date());
-    private static final String CMDI = "/results/cmdi/";
-    private static final String CMDI1_1 = "/results/cmdi-1_1/";
-    private static final String CMDI1_2 = "/results/cmdi-1_2/";
+    private static final String CMDI = "/cmdi/";
+    private static final String CMDI1_1 = "/cmdi-1_1/";
+    private static final String CMDI1_2 = "/cmdi-1_2/";
 
     private static final ConcurrentHashMap<Provider, Statistic> statistic = new ConcurrentHashMap<>();
 

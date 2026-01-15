@@ -18,6 +18,7 @@
 package nl.mpi.oai.harvester.control;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

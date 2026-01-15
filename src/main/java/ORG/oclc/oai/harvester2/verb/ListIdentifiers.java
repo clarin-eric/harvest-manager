@@ -23,6 +23,8 @@ import java.net.URLEncoder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.TransformerException;
+
+import net.sf.saxon.s9api.SaxonApiException;
 import org.xml.sax.SAXException;
 
 /**
@@ -90,8 +92,9 @@ public class ListIdentifiers extends HarvesterVerb {
      * @throws NoSuchFieldException
      */
     public String getResumptionToken()
-    throws TransformerException, NoSuchFieldException, ParserConfigurationException, SAXException, IOException, XMLStreamException {
-        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())) {
+        throws TransformerException, NoSuchFieldException, ParserConfigurationException, SAXException, IOException,
+        XMLStreamException, SaxonApiException {
+        if (SCHEMA_LOCATION_V2_0.equals(getSchemaLocation())||SCHEMA_LOCATION_V2_0_HTTPS.equals(getSchemaLocation())) {
             return getSingleString("/oai20:OAI-PMH/oai20:ListIdentifiers/oai20:resumptionToken");
         } else if (SCHEMA_LOCATION_V1_1_LIST_IDENTIFIERS.equals(getSchemaLocation())) {
             return getSingleString("/oai11_ListIdentifiers:ListIdentifiers/oai11_ListIdentifiers:resumptionToken");

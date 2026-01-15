@@ -146,7 +146,7 @@ public class RegistryReader {
         return model.read("$.fields[?]",uriFilter);
     }
 
-    String endpointMapping(String endpointUrl,String endpointName) throws IOException {
+    public String endpointMapping(String endpointUrl, String endpointName) throws IOException {
         String directoryName = Util.toFileFormat(endpointName).replaceAll("/", "");
         
         Filter provFilter = filter(where("@.fields.uri").is(endpointUrl));

@@ -43,7 +43,7 @@ import java.io.InputStream;
  * @author Lari Lampen (MPI-PL)
  * @author Kees Jan van de Looij (MPI-PL)
  * */
-public class Metadata {
+public class Metadata extends Record {
     private static final Logger logger = LogManager.getLogger(Metadata.class);
     
     /** A unique identifier, such as the OAI-PMH record identifier. */

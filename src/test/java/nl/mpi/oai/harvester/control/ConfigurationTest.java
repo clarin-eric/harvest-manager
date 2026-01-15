@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import com.github.tomakehurst.wiremock.matching.UrlPattern;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.base.Charsets;
 import java.io.BufferedReader;
@@ -91,8 +92,7 @@ public class ConfigurationTest {
         assertEquals("http://www.clarin.eu/cmd/1", actionSequences.get(0).getInputFormat().getValue());
         
         final List<ResourcePool<Action>> actions = actionSequences.get(0).getActions();
-        assertEquals(5, actions.size());
-        
+        assertEquals(7, actions.size());
     }
 
     @Test

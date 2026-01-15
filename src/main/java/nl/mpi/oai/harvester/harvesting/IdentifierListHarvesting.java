@@ -19,6 +19,7 @@
 
 package nl.mpi.oai.harvester.harvesting;
 
+import net.sf.saxon.s9api.SaxonApiException;
 import nl.mpi.oai.harvester.Provider;
 import nl.mpi.oai.harvester.cycle.Endpoint;
 import nl.mpi.oai.harvester.metadata.MetadataFactory;
@@ -93,12 +94,12 @@ public class IdentifierListHarvesting extends ListHarvesting
      */
     @Override
     public DocumentSource verb2(String p1, String p2, int timeout) throws
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException {
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException {
         return oaiFactory.createListIdentifiers(p1, p2, timeout);
     }
 
@@ -117,12 +118,12 @@ public class IdentifierListHarvesting extends ListHarvesting
     @Override
     public DocumentSource verb5(String p1, String p2, String p3, String p4,
             String p5, int timeout, Path temp) throws
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException {
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException {
         return oaiFactory.createListIdentifiers(p1, p2, p3, p4, p5, timeout);
     }
     

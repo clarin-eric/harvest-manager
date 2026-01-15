@@ -1,0 +1,29 @@
+FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk11-1.2.12 as build
+
+RUN apk --no-cache add maven=3.6.1-r0
+
+# install OAI Harvester
+COPY . /tmp
+RUN cd /tmp && \
+    mvn install:install-file -Dfile=/tmp/cronjob/jars/fast-md5/fast-md5-2.7.1.jar -DpomFile=/tmp/cronjob/jars/fast-md5/fast-md5-2.7.1.pom && \
+    mvn clean package
+
+WORKDIR /tmp/oai
+RUN tar -xzf /tmp/target/oai-harvest-manager-1.2*.tar.gz
+
+### Package stage
+
+FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk11-1.2.12
+
+# app workdir
+RUN mkdir -p /app/workdir &&\
+    mkdir -p /app/oai
+WORKDIR /app/oai
+
+COPY --from=build /tmp/oai /app/oai
+
+ENTRYPOINT ["/app/oai/run-harvester.sh"]
+
+# cleanup
+RUN rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/*

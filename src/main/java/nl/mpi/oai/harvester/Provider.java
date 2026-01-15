@@ -22,6 +22,7 @@ import ORG.oclc.oai.harvester2.verb.GetRecord;
 import ORG.oclc.oai.harvester2.verb.Identify;
 import ORG.oclc.oai.harvester2.verb.ListIdentifiers;
 import ORG.oclc.oai.harvester2.verb.ListMetadataFormats;
+import net.sf.saxon.s9api.SaxonApiException;
 import nl.mpi.oai.harvester.action.ActionSequence;
 import nl.mpi.oai.harvester.control.Util;
 import nl.mpi.oai.harvester.harvesting.Harvesting;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import nl.mpi.oai.harvester.metadata.Record;
 
 /**
  * This class represents a single OAI-PMH provider.
@@ -77,10 +79,13 @@ public class Provider {
 
     /** Maximum number of retries to use when a connection fails. */
     public int[] retryDelays = {0};
-    
+
     /** Maximum timeout for a connection */
     public int timeout = 0;
-    
+
+    /** DElay between requests */
+    public int niceDelay = 0;
+
     /** Do I need some time on my own? */
     public boolean exclusive = false;
     
@@ -158,8 +163,18 @@ public class Provider {
      * Prepare this object for use.
      */
     public void init() {
+        this.init(null);
+//		if (name == null) fetchName();
+//		if(deletionMode == null) fetchDeletionMode();
+    }
+    /**
+     * Prepare this object for use.
+     */
+    public void init(String protocolName) {
 		if (name == null) fetchName();
-		if(deletionMode == null) fetchDeletionMode();
+        if (!Objects.equals(protocolName, "nde")) {
+            if(deletionMode == null) fetchDeletionMode();
+        }
     }
 
     public void close() {
@@ -179,7 +194,7 @@ public class Provider {
 
 	// If we simply can't find a name, make one up.
 	if (name == null || name.isEmpty()) {
-	    String domain = oaiUrl.replaceAll(".*//([^/]+)/.*", "$1");
+	    String domain = (oaiUrl!=null?oaiUrl.replaceAll(".*//([^/]+)/.*", "$1"):"LOCALHOST");
 	    name = "Unnamed provider at " + domain;
 	}
     }
@@ -313,9 +328,17 @@ public class Provider {
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
-    
+
     public int getTimeout() {
         return this.timeout;
+    }
+
+    public void setNiceDelay(int delay) {
+        this.niceDelay = delay;
+    }
+
+    public int getNiceDelay() {
+        return this.niceDelay;
     }
 
     public void setMaxRetryCount(int maxRetryCount) {
@@ -375,9 +398,7 @@ public class Provider {
 	    List<String> ids;
 	    try {
 		ids = getIdentifiers(prefix);
-	    } catch (ParserConfigurationException | IOException | SAXException
-		    | TransformerException | XPathExpressionException
-		    | NoSuchFieldException ex) {
+	    } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException | NoSuchFieldException | SaxonApiException ex) {
 		logger.error("Error fetching ids from " + name, ex);
 		return false;
 	    }
@@ -444,8 +465,8 @@ public class Provider {
      * @throws NoSuchFieldException introspection problem
      */
 	public List<String> getIdentifiers(String mdPrefix) throws IOException,
-	    ParserConfigurationException, SAXException, TransformerException,
-	    XPathExpressionException, NoSuchFieldException, XMLStreamException {
+        ParserConfigurationException, SAXException, TransformerException,
+        XPathExpressionException, NoSuchFieldException, XMLStreamException, SaxonApiException {
 	List<String> ids = new ArrayList<>();
 
 	if (sets == null) {
@@ -475,9 +496,9 @@ public class Provider {
      * @throws NoSuchFieldException introspection problem
      */
     public void addIdentifiers(String mdPrefix, String set, List<String> ids)
-	    throws IOException, ParserConfigurationException, SAXException,
-	    TransformerException, XPathExpressionException,
-	    NoSuchFieldException, XMLStreamException {
+        throws IOException, ParserConfigurationException, SAXException,
+        TransformerException, XPathExpressionException,
+        NoSuchFieldException, XMLStreamException, SaxonApiException {
             ListIdentifiers li = new ListIdentifiers(oaiUrl, null, null, set, mdPrefix, timeout);
             for (;;) {
                 addIdentifiers(li.getDocument(), ids);

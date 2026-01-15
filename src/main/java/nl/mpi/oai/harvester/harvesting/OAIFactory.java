@@ -19,6 +19,7 @@
 package nl.mpi.oai.harvester.harvesting;
 
 import ORG.oclc.oai.harvester2.verb.*;
+import net.sf.saxon.s9api.SaxonApiException;
 import nl.mpi.oai.harvester.utils.DocumentSource;
 import org.xml.sax.SAXException;
 
@@ -109,12 +110,12 @@ public class OAIFactory {
      * @return the OAI response
      */
     DocumentSource createListRecords(String endpoint, String resumptionToken, int timeout, Path temp) throws
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException {
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException {
 
         // the verb response
         DocumentSource response;
@@ -128,12 +129,7 @@ public class OAIFactory {
                 HarvesterVerb verb = new ListRecords(endpoint, resumptionToken, timeout, temp);
                 response = verb.getDocumentSource();
                 this.resumptionToken = ((ListRecords) verb).getResumptionToken();
-            } catch (IOException
-                    | ParserConfigurationException
-                    | SAXException
-                    | TransformerException
-                    | NoSuchFieldException
-                    | XMLStreamException e) {
+            } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchFieldException | XMLStreamException | SaxonApiException e) {
                 e.printStackTrace();
                 throw(e);
             }
@@ -159,12 +155,12 @@ public class OAIFactory {
      */
     DocumentSource createListRecords(String endpoint, String fromDate, String untilDate, String set,
                                String metadataPrefix, int timeout, Path temp) throws
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException {
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException {
 
         // the verb response
         DocumentSource response;
@@ -178,12 +174,7 @@ public class OAIFactory {
                 HarvesterVerb verb = new ListRecords(endpoint, fromDate, untilDate, set, metadataPrefix, timeout, temp);
                 response = verb.getDocumentSource();
                 resumptionToken = ((ListRecords) verb).getResumptionToken();
-            } catch (IOException
-                    | ParserConfigurationException
-                    | SAXException
-                    | TransformerException
-                    | NoSuchFieldException
-                    | XMLStreamException e) {
+            } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchFieldException | XMLStreamException | SaxonApiException e) {
                 e.printStackTrace();
                 throw(e);
             }
@@ -248,12 +239,12 @@ public class OAIFactory {
      * @return the OAI response
      */
     DocumentSource createListIdentifiers(String endpoint, String resumptionToken, int timeout) throws
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException {
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException {
 
         // the verb response
         DocumentSource response;
@@ -267,12 +258,7 @@ public class OAIFactory {
                 HarvesterVerb verb = new ListIdentifiers(endpoint, resumptionToken, timeout);
                 response = verb.getDocumentSource();
                 this.resumptionToken = ((ListIdentifiers) verb).getResumptionToken();
-            } catch (IOException
-                    | ParserConfigurationException
-                    | SAXException
-                    | TransformerException
-                    | NoSuchFieldException
-                    | XMLStreamException e) {
+            } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchFieldException | XMLStreamException | SaxonApiException e) {
                 e.printStackTrace();
                 throw(e);
             }
@@ -298,12 +284,12 @@ public class OAIFactory {
      */
     DocumentSource createListIdentifiers(String endpoint, String fromDate, String untilDate,
                                    String set, String metadataPrefix, int timeout) throws
-            IOException,
-            ParserConfigurationException,
-            SAXException,
-            TransformerException,
-            NoSuchFieldException,
-            XMLStreamException {
+        IOException,
+        ParserConfigurationException,
+        SAXException,
+        TransformerException,
+        NoSuchFieldException,
+        XMLStreamException, SaxonApiException {
 
         // the verb response
         DocumentSource response;
@@ -317,12 +303,7 @@ public class OAIFactory {
                 HarvesterVerb verb = new ListIdentifiers(endpoint, fromDate, untilDate, set, metadataPrefix, timeout);
                 response = verb.getDocumentSource();
                 resumptionToken = ((ListIdentifiers) verb).getResumptionToken();
-            } catch (IOException
-                    | ParserConfigurationException
-                    | SAXException
-                    | TransformerException
-                    | NoSuchFieldException
-                    | XMLStreamException e) {
+            } catch (IOException | ParserConfigurationException | SAXException | TransformerException | NoSuchFieldException | XMLStreamException | SaxonApiException e) {
                 e.printStackTrace();
                 throw(e);
             }

@@ -143,7 +143,7 @@ public class ScenarioTest {
         Provider endpoint = helper.getFirstEndpoint();
         for (; ; ) {
             // create a scenario with the endpoint and the mocked sequence
-            Scenario scenario = new Scenario(endpoint, sequence);
+            OAIScenario scenario = new OAIScenario(endpoint, sequence);
 
             // create a harvesting object
             FormatHarvesting formatHarvesting = new FormatHarvesting(oaiFactory,
