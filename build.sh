@@ -25,7 +25,7 @@ CLEAN_CACHE=${CLEAN_CACHE:-false}
 
 SCRIPT_DIR="$( cd "$(dirname "$0")" ; pwd -P )"
 MAVEN_CONFIG_IMAGE="${APP_NAME}-maven-build-cache"
-MAVEN_CONFIG_DIR="/root/.m2"
+MAVEN_CONFIG_DIR="${HOME}/.m2"
 BUILD_CONTAINER_NAME="${APP_NAME}-maven-build"
 
 MAVEN_OPTS="$@"
