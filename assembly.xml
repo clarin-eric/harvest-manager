@@ -1,55 +1,60 @@
 <assembly>
-  <id>deployment</id>
-  <formats>
-    <format>tar.gz</format>
-  </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
-  <fileSets>
-    <fileSet>
-      <directory>src/main/resources</directory>
-      <outputDirectory>resources</outputDirectory>
-      <includes>
+    <id>deployment</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>resources</outputDirectory>
+            <includes>
 
-        <!-- Do the XML files in the resources directory. Please note that Maven
-         will also include them in them in the jar. -->
-	      <include>config*.xml</include>
-        <include>addOAISetName.xsl</include>
-        <include>filter.xsl</include>
+                <!-- Do the XML files in the resources directory. Please note that Maven
+                 will also include them in them in the jar. -->
+                <include>config*.xml</include>
+                <include>addOAISetName.xsl</include>
+                <include>filter.xsl</include>
 
-        <!-- Include xhtml dtd and its entity files -->
-        <include>xhtml*.*</include>
+                <!-- Include xhtml dtd and its entity files -->
+                <include>xhtml*.*</include>
 
-        <!-- Do include the log4j properties file in the resources directory
-         while excluding it from the jar. Please refer to the configuration of
-         the jar plugin in the POM -->
-        <include>log4j2.xml</include>
-
-        <!-- include python harvest scripts -->
-        <include>harvest/**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>src/main/scripts</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-    	  <include>run-harvester.sh</include>
-      </includes>
-      <fileMode>0755</fileMode>
-      <filtered>true</filtered>
-    </fileSet>		
-    <fileSet>
-      <directory>target</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-	    <include>${project.artifactId}-${versionNumber}.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>target/lib</directory>
-      <outputDirectory>lib</outputDirectory>
-      <includes>
-	      <include>**/*</include>
-      </includes>
-    </fileSet>
-  </fileSets>
+                <!-- Do include the log4j properties file in the resources directory
+                 while excluding it from the jar. Please refer to the configuration of
+                 the jar plugin in the POM -->
+                <include>log4j2.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/scripts</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>run-harvester.sh</include>
+            </includes>
+            <fileMode>0755</fileMode>
+            <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/scripts/harvest</directory>
+            <outputDirectory>harvest</outputDirectory>
+            <includes>
+                <!-- include python harvest scripts -->
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>${project.artifactId}-${versionNumber}.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
 </assembly>
