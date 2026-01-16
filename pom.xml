@@ -23,7 +23,7 @@
         <repository>
             <id>mvnrepo</id>
             <name>mvnrepo</name>
-            <url>https://repo1.maven.org/maven2</url>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
             <id>huygens-maven</id>
@@ -98,6 +98,8 @@
         </dependency>
 
 
+        <!-- Logging dependencies -->
+        <!-- CVE-2025-68161 Severity Score 5.4 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -117,18 +119,13 @@
             <version>2.7.1</version>
         </dependency>
 
+        <!-- CVE-2020-11226 Severity Score 6.9 -->
         <dependency>
             <groupId>nl.mpi.tla</groupId>
             <artifactId>SaxonUtils</artifactId>
-            <version>2.0-RC6-SNAPSHOT</version>
+            <version>2.0-RC7-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>xalan</groupId>-->
-<!--            <artifactId>xalan</artifactId>-->
-<!--            <version>2.7.2</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>junit</groupId>
@@ -175,19 +172,24 @@
             <artifactId>json-smart</artifactId>
             <version>2.5.2</version> <!-- Use the latest version -->
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock -->
+        <!-- Source: https://mvnrepository.com/artifact/org.wiremock/wiremock -->
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
+            <groupId>org.wiremock</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.27.2</version>
-            <!--<type>pom</type>-->
+            <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock -->
+<!--        <dependency>-->
+<!--            <groupId>com.github.tomakehurst</groupId>-->
+<!--            <artifactId>wiremock</artifactId>-->
+<!--            <version>3.0.1</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.0.1-jre</version>
+            <version>32.0.1-android</version>
         </dependency>
     
         <!-- for java 11 -->
@@ -213,24 +215,6 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-storage</artifactId>
-            <version>4.0.5</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
-        </dependency>
-        -->
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.rdf4j</groupId>-->
-<!--            <artifactId>rdf4j-repository-sparql</artifactId>-->
-<!--            <version>4.0.2</version>-->
-<!--        </dependency>-->
     </dependencies>
 
     <!-- Build cycle referred plugins -->
