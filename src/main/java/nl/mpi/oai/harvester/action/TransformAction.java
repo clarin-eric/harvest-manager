@@ -258,6 +258,7 @@ public class TransformAction implements Action {
                     //res = resolver.resolve(request);
                     res = req.resolve(resolver);
                     Saxon.save(res, cacheDir.resolve(cacheFile).toFile());
+                    res = new StreamSource(cacheDir.resolve(cacheFile).toFile());
                     logger.debug("Transformer resolver: stored ["+cacheFile+"] in cache ["+cacheDir.resolve(cacheFile).toFile().toString()+"]");
                 } catch (Exception ex) {
                     throw new net.sf.saxon.trans.XPathException(ex);
