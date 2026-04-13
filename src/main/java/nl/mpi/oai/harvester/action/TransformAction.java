@@ -246,19 +246,21 @@ public class TransformAction implements Action {
                 logger.debug("Transformer resolver: loaded ["+cacheDir.resolve(cacheFile).toFile().toString()+"] from cache");
             } else {
                 try {
-                    if (resolver == null) 
+                    if (resolver == null)
                         resolver = new DirectResourceResolver(Saxon.getProcessor().getUnderlyingConfiguration());
-                    //ResourceRequest request = new ResourceRequest();
-                    //request.relativeUri = uri;
-                    //request.baseUri = base;
-                    //request.uri = uri;
-                    //request.nature = ResourceRequest.XML_NATURE;
-                    //request.purpose = ResourceRequest.ANY_PURPOSE;
-                    //res = request.resolve(resolver);
-                    //res = resolver.resolve(request);
-                    res = req.resolve(resolver);
-                    Saxon.save(res, cacheDir.resolve(cacheFile).toFile());
+
+                    // Resolve the resource and immediately cache it to avoid stream closure issues
+                    Source resolvedSource = req.resolve(resolver);
+
+                    // Save to cache file immediately to buffer the entire content
+                    // This prevents "stream is closed" errors that occur when the HTTP connection
+                    // closes before the XML parser finishes reading
+                    Saxon.save(resolvedSource, cacheDir.resolve(cacheFile).toFile());
                     logger.debug("Transformer resolver: stored ["+cacheFile+"] in cache ["+cacheDir.resolve(cacheFile).toFile().toString()+"]");
+
+                    // Return a new Source pointing to the cached file
+                    // This ensures the parser reads from a file stream, not an HTTP stream that may be closed
+                    res = new StreamSource(cacheDir.resolve(cacheFile).toFile());
                 } catch (Exception ex) {
                     throw new net.sf.saxon.trans.XPathException(ex);
                 }
