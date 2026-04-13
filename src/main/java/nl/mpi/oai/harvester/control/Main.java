@@ -65,19 +65,19 @@ public class Main {
 
         // Load the corresponding protocol class according to config.settings.protocol
         String protocolString = config.getProtocol();
-        logger.info("Protocol is " + protocolString);
         Class<?> c;
 
         // Load the protocol, default to OAI in case of error
         try {
-            logger.info("Loading protocol class " + protocolString);
             c = Class.forName(protocolString);
+            logger.info("Protocol loaded: " + protocolString);
         } catch (ClassNotFoundException e) {
             try {
-                logger.info("Cannot load " + protocolString + "; Loading default protocol: OAI-PMH. ");
+                logger.warn("Cannot load protocol: " + protocolString + "; using default OAI-PMH");
                 c = Class.forName(defaultProtocol);
+                logger.info("Protocol loaded: " + defaultProtocol);
             } catch (ClassNotFoundException ex) {
-                logger.error("Cannot load default protocol OAI-PMH. Quitting! ");
+                logger.error("Failed to load both custom protocol and default OAI-PMH", ex);
                 throw new RuntimeException(ex);
             }
         }

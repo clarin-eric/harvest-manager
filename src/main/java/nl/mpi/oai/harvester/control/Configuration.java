@@ -893,16 +893,14 @@ public class Configuration {
      * Get Protocol
      */
     public String getProtocol() {
-        // TODO: for now, get protocol will return oai if there is no protocol or empty protocol, should discuss
-        String s = "";
-        try {
-            s = settings.get("protocol");
-        } catch (Exception ex) {
-            logger.info("Error configuration getting protocol string, default to: [" + s + "]");
+        String protocol = settings.get(KnownOptions.PROTOCOL.toString());
+
+        // Default to "oai" if protocol is not configured, null, or empty
+        if (protocol == null || protocol.trim().isEmpty()) {
             return "oai";
         }
-        logger.info("Configuration getting protocol string: [" + s + "]");
-        return s == null ? "oai" : s;
+
+        return protocol;
     }
 
     /**
