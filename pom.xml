@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>txw2</artifactId>
-            <version>3.0.0-M4</version>
+            <version>3.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xsom</groupId>
