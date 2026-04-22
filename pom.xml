@@ -94,7 +94,7 @@
         <dependency>
             <groupId>com.sun.xml.bind.external</groupId>
             <artifactId>rngom</artifactId>
-            <version>3.0.0-M4</version>
+            <version>3.0.2</version>
         </dependency>
 
 
