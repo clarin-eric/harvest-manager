@@ -1,11 +1,11 @@
 ### Note: this is using multistage build, see https://docs.docker.com/develop/develop-images/multistage-build/
 ### alpine: 3.23.2
-FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk21_jre-1.3.0 AS java-base
+FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk21_jre-1.3.9 AS java-base
 
 RUN apk --no-cache add \
+                       rsync=3.4.3-r0 \
                        bzip2=1.0.8-r6 \
-                       rsync=3.4.1-r1 \
-                       postgresql16-client=16.13-r0
+                       postgresql16-client=16.14-r0
 
 # build stage
 FROM java-base AS build
