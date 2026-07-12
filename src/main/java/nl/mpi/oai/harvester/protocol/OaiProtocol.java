@@ -94,8 +94,6 @@ public class OaiProtocol extends Protocol {
             ThreadContext.put("logFileName", Util.toFileFormat(provider.getName()).replaceAll("/", ""));
 
             String map = config.getMapFile();
-            String workDir = config.getWorkingDirectory();
-            map = workDir + "/" + map;
             synchronized (map) {
                 try (PrintWriter m = new PrintWriter(new FileWriter(map, true))) {
                     if (config.hasRegistryReader()) {

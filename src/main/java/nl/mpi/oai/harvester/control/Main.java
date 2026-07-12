@@ -73,7 +73,7 @@ public class Main {
             logger.info("Protocol loaded: " + protocolString);
         } catch (ClassNotFoundException e) {
             try {
-                logger.warn("Cannot load protocol: " + protocolString + "; using default OAI-PMH");
+                //logger.warn("Cannot load protocol: " + protocolString + "; using default OAI-PMH");
                 c = Class.forName(defaultProtocol);
                 logger.info("Protocol loaded: " + defaultProtocol);
             } catch (ClassNotFoundException ex) {

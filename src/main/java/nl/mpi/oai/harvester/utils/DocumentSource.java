@@ -21,6 +21,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
@@ -198,6 +199,18 @@ public class DocumentSource {
                         logger.error(ex);
                     }
                 }
+            } else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) {
+                logger.info("request["+requestURL+"] is FORBIDDEN!");
+//                in = con.getInputStream();
+//                StringBuilder textBuilder = new StringBuilder();
+//                try (Reader reader = new BufferedReader(new InputStreamReader
+//                  (in, StandardCharsets.UTF_8))) {
+//                    int c = 0;
+//                    while ((c = reader.read()) != -1) {
+//                        textBuilder.append((char) c);
+//                    }
+//                }
+//                logger.info("request["+requestURL+"] is FORBIDDEN! ["+textBuilder.toString()+"]");
             }
         } while (responseCode == HttpURLConnection.HTTP_UNAVAILABLE);
         String contentEncoding = con.getHeaderField("Content-Encoding");

@@ -216,8 +216,8 @@ public class Configuration {
             Node curr = (Node) xpath.evaluate(opt,
                     base, XPathConstants.NODE);
             if (curr == null) {
-                logger.warn("Config file has no value for " + opt
-                        + ". This may be an error. Continuing anyway.");
+                //logger.warn("Config file has no value for " + opt
+                //        + ". This may be an error. Continuing anyway.");
                 continue;
             }
             String text = curr.getTextContent();
@@ -824,7 +824,7 @@ public class Configuration {
                     map.close();
             }
         }
-        return mapFile;
+        return p.toAbsolutePath().toString();
     }
 
     /**
@@ -897,7 +897,7 @@ public class Configuration {
 
         // Default to "oai" if protocol is not configured, null, or empty
         if (protocol == null || protocol.trim().isEmpty()) {
-            return "oai";
+            return "nl.mpi.oai.harvester.protocol.OaiProtocol";
         }
 
         return protocol;
