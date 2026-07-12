@@ -353,7 +353,10 @@ public class Configuration {
             }
         } else if ("save".equals(actionType)) {
             String outDirId = Util.getNodeText(xpath, "./@dir", base);
-            boolean history = Boolean.parseBoolean(Util.getNodeText(xpath, "./@history", base));
+            boolean history = false; 
+            if (Boolean.parseBoolean(Util.getNodeText(xpath, "./@history", base))) {
+                logger.warn("history on the save action cannot be enabled ... incremental harvesting needs to be finished!");
+            }
             String suffix = Util.getNodeText(xpath, "./@suffix", base);
 
             // if null defaults to false, only "true" leads to true
