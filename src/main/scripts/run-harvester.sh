@@ -31,4 +31,8 @@ CLASSPATH="`find $thisDir -type f -name '*.jar' -exec echo -n "{}:" \;`$CLASSPAT
 
 PROPS="${PROPS} -Dlogdir=${LOG_DIR} -Dhttp.user=Mozilla/5.0"
 
-nice ${JAVA} -cp ${CLASSPATH}:${JAR}${PROPS} nl.mpi.oai.harvester.control.Main $*
+(
+    cd "${thisDir}" && nice ${JAVA} \
+        -cp ${CLASSPATH}:${JAR}${PROPS} \
+        nl.mpi.oai.harvester.control.Main $*
+)
