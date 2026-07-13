@@ -419,10 +419,14 @@ public class Configuration {
             } catch (NoSuchMethodException e) {
                 logger.error("Cannot load external action from external jar [" + jarLocation + "], model " + actionType + ". No such method. ", e);
             }
+            if (act == null) {
+                logger.error("Unknown action[" + actionType + "]");
+            }
         }
-        if (act == null)
-            logger.error("Unknown action[" + actionType + "]");
 
+        if (act == null) {
+            logger.error("Could not configure action[" + actionType + "]");
+        }
         return act;
     }
 
