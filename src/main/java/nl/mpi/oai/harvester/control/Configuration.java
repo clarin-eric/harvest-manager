@@ -216,8 +216,8 @@ public class Configuration {
             Node curr = (Node) xpath.evaluate(opt,
                     base, XPathConstants.NODE);
             if (curr == null) {
-                logger.warn("Config file has no value for " + opt
-                        + ". This may be an error. Continuing anyway.");
+                //logger.warn("Config file has no value for " + opt
+                //        + ". This may be an error. Continuing anyway.");
                 continue;
             }
             String text = curr.getTextContent();
@@ -353,7 +353,10 @@ public class Configuration {
             }
         } else if ("save".equals(actionType)) {
             String outDirId = Util.getNodeText(xpath, "./@dir", base);
-            boolean history = Boolean.parseBoolean(Util.getNodeText(xpath, "./@history", base));
+            boolean history = false; 
+            if (Boolean.parseBoolean(Util.getNodeText(xpath, "./@history", base))) {
+                logger.warn("history on the save action cannot be enabled ... incremental harvesting needs to be finished!");
+            }
             String suffix = Util.getNodeText(xpath, "./@suffix", base);
 
             // if null defaults to false, only "true" leads to true
@@ -416,10 +419,14 @@ public class Configuration {
             } catch (NoSuchMethodException e) {
                 logger.error("Cannot load external action from external jar [" + jarLocation + "], model " + actionType + ". No such method. ", e);
             }
+            if (act == null) {
+                logger.error("Unknown action[" + actionType + "]");
+            }
         }
-        if (act == null)
-            logger.error("Unknown action[" + actionType + "]");
 
+        if (act == null) {
+            logger.error("Could not configure action[" + actionType + "]");
+        }
         return act;
     }
 
@@ -824,7 +831,7 @@ public class Configuration {
                     map.close();
             }
         }
-        return mapFile;
+        return p.toAbsolutePath().toString();
     }
 
     /**
@@ -897,7 +904,7 @@ public class Configuration {
 
         // Default to "oai" if protocol is not configured, null, or empty
         if (protocol == null || protocol.trim().isEmpty()) {
-            return "oai";
+            return "nl.mpi.oai.harvester.protocol.OaiProtocol";
         }
 
         return protocol;

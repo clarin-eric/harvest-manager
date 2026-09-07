@@ -72,14 +72,8 @@ public class Main {
             c = Class.forName(protocolString);
             logger.info("Protocol loaded: " + protocolString);
         } catch (ClassNotFoundException e) {
-            try {
-                logger.warn("Cannot load protocol: " + protocolString + "; using default OAI-PMH");
-                c = Class.forName(defaultProtocol);
-                logger.info("Protocol loaded: " + defaultProtocol);
-            } catch (ClassNotFoundException ex) {
-                logger.error("Failed to load both custom protocol and default OAI-PMH", ex);
-                throw new RuntimeException(ex);
-            }
+            logger.error("Failed to load protocol!", e);
+            throw new RuntimeException(e);
         }
 
         // Get protocol constructor
