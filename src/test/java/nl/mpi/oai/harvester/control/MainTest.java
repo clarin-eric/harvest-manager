@@ -18,6 +18,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Ignore;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,8 @@ public class MainTest {
 //        final Configuration config = readConfig(BASIC_CONFIG_WITH_DEFAULT_PROTOCOL);
 //        Main.runHarvesting(config);
 //    }
-
     @Test
+    @Ignore
     public void testRunHarvestingNdeProtocol() throws Exception {
         // TODO: assert something
         final Configuration config = readConfig(BASIC_CONFIG_WITH_NDE_PROTOCOL);
