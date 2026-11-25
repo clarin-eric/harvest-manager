@@ -1,11 +1,11 @@
 ### Note: this is using multistage build, see https://docs.docker.com/develop/develop-images/multistage-build/
 ### alpine: 3.23.2
-FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk21_jre-1.3.14 AS java-base
+FROM registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-base:openjdk21_jre-1.4.1 AS java-base
 
 RUN apk --no-cache add \
-                       rsync=3.5.0-r0 \
+                       rsync=3.5.2-r1 \
                        bzip2=1.0.8-r6 \
-                       postgresql16-client=16.15-r0
+                       postgresql16-client=16.16-r0
 
 # build stage
 FROM java-base AS build
@@ -17,8 +17,8 @@ ARG HARVEST_VIEWER_REPO=https://github.com/clarin-eric/oai-harvest-viewer.git
 ARG HARVEST_MANAGER_REPO=https://github.com/CLARIAH/oai-harvest-manager.git
 
 RUN apk --no-cache add \
-                       git=2.52.0-r0 \
-                       maven=3.9.11-r0
+                       git=2.54.1-r0 \
+                       maven=3.9.16-r0
 
 # install OAI Harvester git
 RUN mkdir /tmp/oai && \
@@ -29,7 +29,7 @@ RUN mkdir /tmp/oai && \
     mvn -DskipTests=true clean package
 
 WORKDIR /tmp/oai
-RUN tar -xzf /tmp/harvest-manager/target/harvest-manager-2.0*.tar.gz
+RUN tar -xzf /tmp/harvest-manager/target/harvest-manager-2.*.tar.gz
 
 ### Package stage
 
