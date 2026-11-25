@@ -5,6 +5,10 @@ on:
     tags:
       - '*'
       - '**'
+  pull_request:
+    branches:
+      - master
+      - main
   release:
     types: [published]
   workflow_dispatch:
